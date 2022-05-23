@@ -33,6 +33,7 @@ const InventorySchema = new mongoose.Schema({
   - @identifier (id) : String: auto-generated alphanumeric unique identifier
   - @description: String: A brief description of the item
   - @inventory : ObjectID: the inventory to which this item belongs
+  - @quantity : amount of this item
 
  */
 const ItemSchema = new mongoose.Schema({
@@ -43,6 +44,10 @@ const ItemSchema = new mongoose.Schema({
   description: {
     type: String,
     required: true,
+  },
+  quantity:{
+      type:String,
+      required:true,
   },
   inventory: {
     type: Schema.Types.ObjectId,
@@ -73,7 +78,7 @@ const WarehouseSchema = new mongoose.Schema({
   },
 });
 
-mongoose.model.exports = {
+module.exports = {
     Inventory:mongoose.model("Inventory",InventorySchema),
     Item:mongoose.model("Item",ItemSchema),
     Warehouse:mongoose.model("Warehouse",WarehouseSchema)

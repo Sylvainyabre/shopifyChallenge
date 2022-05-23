@@ -1,5 +1,5 @@
 
-const { Inventory, Item, Warehouse } = require("models");
+const { Inventory, Item, Warehouse } = require("./models");
 
 /***
 @url :
@@ -26,7 +26,7 @@ const createInventory = async (req, res) => {
  */
 const getItem = async (req, res) => {
   try {
-    const item = Item.find({ _id: req.params.id }).populate("inventory");
+    const item = await Item.find({ _id: req.params.id }).populate("inventory");
     if (!item) {
       return res
         .status(404)
@@ -45,11 +45,11 @@ const getItem = async (req, res) => {
  */
 const getItemsList = async (req, res) => {
   try {
-    const items = Item.find().populate("inventory");
+    const items = await Item.find().populate("inventory");
     if (!items) {
       return res.json({ success: false, message: "Something went wrong" });
     }
-    return res.json({ success: true, items });
+    return res.json({ success: true, items:items });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
@@ -65,10 +65,11 @@ const createItem = async (req, res) => {
     const newItem = new Item({
       name: req.body.name,
       description: req.body.description,
+      quantity:req.body.quantity,
       Inventory: req.params.inventory,
     });
-    const savedItem = newItem.save();
-    return res.json({ success: true, savedItem });
+    const savedItem = await newItem.save();
+    return res.json({ success: true, savedItem:savedItem });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
@@ -90,6 +91,7 @@ const editItem = async (req, res) => {
     const updateData = {
       name: req.body.name,
       description: req.body.description,
+      quantity:req.body.quantity,
       inventory: req.body.inventory,
     };
     const updatedItem = await Item.findByIdAndUpdate(
@@ -98,7 +100,7 @@ const editItem = async (req, res) => {
       { new: true }
     );
 
-    return res.json({ success: true, updatedItem });
+    return res.json({ success: true, updatedItem:updatedItem });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
@@ -116,17 +118,17 @@ const deleteItem = async (req, res) => {
       return res.json({ success: false, message: "Item not found" });
     }
     const deleted = await Item.deleteOne({ _id: req.params.id });
-    return res.json({ success: true, deleted });
+    return res.json({ success: true, deleted:deleted });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
 };
 
-// /***
-// @url :
-// @description :
-// @access:
-//  */
+/***
+@url :
+@description :
+@access:
+ */
 // const deleteInventory = async (req, res) => {
 //   try {
 //       const inventory = await Inventory.findById({_id:req.params.id});
@@ -144,6 +146,5 @@ module.exports = {
     getItemsList,
     createItem,
     deleteItem,
-    createInventory,
-
+    createInventory
 }
